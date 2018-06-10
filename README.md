@@ -26,7 +26,7 @@ let pkgShape = is.shape({
   bin: is.maybe(is.either(is.string, is.arrayOf(is.string))),
 });
 
-let safePkg = is.pkg(pkg, pkgShape, 'pkg');
+let safePkg = is(pkg, pkgShape, 'pkg');
 // type:
 //   {
 //     name: string,
