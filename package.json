@@ -1,0 +1,27 @@
+{
+  "name": "sarcastic",
+  "version": "0.0.0",
+  "description": "Cast unknown values to typed values",
+  "main": "lib/index.js",
+  "repository": "https://github.com/jamiebuilds/sarcastic",
+  "author": "James Kyle <me@thejameskyle.com>",
+  "license": "MIT",
+  "keywords": [
+    "type",
+    "flow",
+    "cast",
+    "assert",
+    "assertions",
+    "immutable"
+  ],
+  "files": [
+    "lib"
+  ],
+  "scripts": {
+    "test": "flow && ava"
+  },
+  "devDependencies": {
+    "ava": "^0.25.0",
+    "flow-bin": "^0.74.0"
+  }
+}
