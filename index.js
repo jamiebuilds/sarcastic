@@ -25,7 +25,7 @@ class AssertionError extends Error {
   }
 }
 
-let is = /*:: <T> */ (val/*: mixed */, assertion/*: Assertion<T> */, name/*: string */)/*: T */ => {
+let is = /*:: <T> */ (val/*: mixed */, assertion/*: Assertion<T> */, name/*: string */ = 'value')/*: T */ => {
   return assertion(val, name);
 };
 

@@ -3,16 +3,16 @@
 const test = require('ava');
 const is = require('./');
 
+test('is without name', t => {
+  t.is(is(true, is.boolean), true);
+  t.is(is(false, is.boolean), false);
+  t.throws(() => is(42, is.boolean));
+});
+
 test('is.boolean', t => {
   t.is(is(true, is.boolean, 'true'), true);
   t.is(is(false, is.boolean, 'false'), false);
   t.throws(() => is(42, is.boolean, '42'));
-});
-
-test('is.number', t => {
-  t.is(is(42, is.number, '42'), 42);
-  t.is(is(NaN, is.number, 'NaN'), NaN);
-  t.throws(() => is(true, is.number, 'true'));
 });
 
 test('is.number', t => {
