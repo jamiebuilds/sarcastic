@@ -47,6 +47,15 @@ test('is.arrayOf', t => {
   t.throws(() => is(["hi"], is.arrayOf(is.number), '["hi"]'));
 });
 
+test('is.arrayish', t => {
+  t.deepEqual(is(1, is.arrayish(is.number), '[1]'), [1]);
+  t.deepEqual(is([], is.arrayish(is.number), '[]'), []);
+  t.deepEqual(is([1, 2, 3], is.arrayish(is.number), '[1, 2, 3]'), [1, 2, 3]);
+  t.throws(() => is("hi", is.arrayish(is.number), '"hi"'));
+  t.throws(() => is({}, is.arrayish(is.number), '{}'));
+  t.throws(() => is(["hi"], is.arrayish(is.number), '["hi"]'));
+});
+
 test('is.objectOf', t => {
   t.deepEqual(is({}, is.objectOf(is.boolean), '{}'), {});
   t.deepEqual(is({ foo: true }, is.objectOf(is.boolean), '{ foo: true }'), { foo: true });
@@ -68,6 +77,13 @@ test('is.maybe', t => {
   t.is(is(null, is.maybe(is.boolean), 'null'), null);
   t.is(is(true, is.maybe(is.boolean), 'true'), true);
   t.throws(() => is(42, is.maybe(is.boolean), '42'));
+});
+
+test('is.default', t => {
+  t.is(is(undefined, is.default(is.number, 42), 'undefined'), 42);
+  t.is(is(null, is.default(is.number, 42), 'null'), 42);
+  t.is(is(3.14, is.default(is.number, 42), '3.14'), 3.14);
+  t.throws(() => is("hi", is.default(is.number, 42), '"hi"'));
 });
 
 test('is.either', t => {

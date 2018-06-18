@@ -60,6 +60,22 @@ let arrayOf = /*:: <T> */ (assertion /*: Assertion<T> */) /*: Assertion<Array<T>
   };
 };
 
+let arrayish = /*:: <T> */ (assertion /*: Assertion<T> */) /*: Assertion<Array<T>> */ => {
+  let arrAssertion = is.arrayOf(assertion);
+  return (val, name) => {
+    if (Array.isArray(val)) {
+      return arrAssertion(val, name);
+    } else {
+      try {
+        return [assertion(val, name)];
+      } catch (err) {
+        if (!(err instanceof AssertionError)) throw err;
+        throw new AssertionError(`${err.kind} or an array`, name, val);
+      }
+    }
+  };
+};
+
 let objectOf = /*::<T> */ (assertion/*: Assertion<T>*/)/*: Assertion<{ [key: string]: T }> */ => {
   return (val, name) => {
     let obj = is(val, object, name);
@@ -89,6 +105,13 @@ let maybe = /*:: <T> */ (assertion /*: Assertion<T> */) /*: Assertion<T | null> 
   };
 };
 
+let _default = /*:: <T> */ (assertion /*: Assertion<T> */, defaultValue /*: T */) /*: Assertion<T> */ => {
+  return (val, name) => {
+    if (typeof val === 'undefined' || val === null) return defaultValue;
+    return assertion(val, name);
+  };
+};
+
 let either = /*:: <A, B> */ (assertionA /*: Assertion<A> */, assertionB /*: Assertion<B> */) /*: Assertion<A | B> */ => {
   return (val, name) => {
     try {
@@ -112,9 +135,11 @@ is.string = string;
 is.array = array;
 is.object = object;
 is.arrayOf = arrayOf;
+is.arrayish = arrayish;
 is.objectOf = objectOf;
 is.shape = shape;
 is.maybe = maybe;
+is.default = _default;
 is.either = either;
 is.AssertionError = AssertionError;
 
