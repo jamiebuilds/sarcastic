@@ -1,6 +1,6 @@
 {
   "name": "sarcastic",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "description": "Cast unknown values to typed values",
   "main": "index.js",
   "repository": "https://github.com/jamiebuilds/sarcastic",
