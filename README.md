@@ -15,10 +15,9 @@ yarn add sarcastic
 ## Usage
 
 ```js
-const is = require('sarcastic');
-const pkg = require('./package.json');
+import is, { type AssertionType } from 'sarcastic';
 
-let pkgShape = is.shape({
+const PKG_SHAPE = is.shape({
   name: is.string,
   version: is.string,
   private: is.maybe(is.boolean),
@@ -26,7 +25,13 @@ let pkgShape = is.shape({
   bin: is.maybe(is.either(is.string, is.arrayOf(is.string))),
 });
 
-let safePkg = is(pkg, pkgShape, 'pkg');
+type PkgShape = AssertionType<typeof PKG_SHAPE>;
+
+function assertPkg(pkg: mixed): PkgShape {
+  return is(pkg, pkgShape, 'pkg');
+}
+
+let pkg = assertPkg(require('./package.json'));
 // type:
 //   {
 //     name: string,
