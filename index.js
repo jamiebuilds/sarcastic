@@ -116,5 +116,6 @@ is.objectOf = objectOf;
 is.shape = shape;
 is.maybe = maybe;
 is.either = either;
+is.AssertionError = AssertionError;
 
 module.exports = is;
