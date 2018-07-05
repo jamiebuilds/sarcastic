@@ -28,7 +28,7 @@ const PKG_SHAPE = is.shape({
 type PkgShape = AssertionType<typeof PKG_SHAPE>;
 
 function assertPkg(pkg: mixed): PkgShape {
-  return is(pkg, pkgShape, 'pkg');
+  return is(pkg, PKG_SHAPE, 'pkg');
 }
 
 let pkg = assertPkg(require('./package.json'));
