@@ -33,6 +33,13 @@ test('is.array', t => {
   t.throws(() => is({}, is.array, '{}'));
 });
 
+test('is.func', t => {
+  let fn = () => {};
+  t.deepEqual(is(fn, is.func, 'func'), fn);
+  t.throws(() => is({}, is.func, '{}'));
+  t.throws(() => is(/regex/, is.func, '/regex/'));
+});
+
 test('is.object', t => {
   t.deepEqual(is({}, is.object, '{}'), {});
   t.deepEqual(is({ foo: true }, is.object, '{ foo: true }'), { foo: true });

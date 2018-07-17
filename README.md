@@ -83,6 +83,14 @@ is([1, 2, 3], is.array); // returns [1, 2, 3]
 is({}, is.array); // throws instanceof is.AssertionError
 ```
 
+### `is.func`
+
+```js
+is(() => {}, is.func); // returns () => {}
+is({}, is.func); // throws instanceof is.AssertionError
+is(/regex/, is.func); // throws instanceof is.AssertionError
+```
+
 ### `is.object`
 
 ```js

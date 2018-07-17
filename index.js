@@ -44,9 +44,19 @@ let string /*: Assertion<string> */ = (val, name) => {
   throw new AssertionError('a string', name, val);
 };
 
+let regex /*: Assertion<RegExp> */ = (val, name) => {
+  if (typeof val === 'object' && val instanceof RegExp) return val;
+  throw new AssertionError('a regex', name, val);
+};
+
 let array /*: Assertion<Array<mixed>> */ = (val, name) => {
   if (Array.isArray(val)) return val;
   throw new AssertionError('an array', name, val);
+};
+
+let func /*: Assertion<Function> */ = (val, name) => {
+  if (typeof val === 'function') return val;
+  throw new AssertionError('a function', name, val);
 };
 
 let object /*: Assertion<{ [key: string]: mixed }> */ = (val, name) => {
@@ -133,6 +143,7 @@ is.boolean = boolean;
 is.number = number;
 is.string = string;
 is.array = array;
+is.func = func;
 is.object = object;
 is.arrayOf = arrayOf;
 is.arrayish = arrayish;
