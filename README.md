@@ -15,6 +15,29 @@ yarn add sarcastic
 ## Usage
 
 ```js
+const is = require('sarcastic');
+
+const PKG_SHAPE = is.shape({
+  name: is.string,
+  version: is.string,
+  private: is.default(is.boolean, false),
+  scripts: is.maybe(is.objectOf(is.string)),
+  bin: is.maybe(is.either(is.string, is.arrayOf(is.string))),
+});
+
+let pkg = is(require('./package.json'), PKG_SHAPE);
+// {
+//   name: "sarcastic",
+//   version: "1.0.0",
+//   private: false,
+//   scripts: { "test": "ava" },
+//   bin: null
+// }
+```
+
+**With strict typing:**
+
+```js
 import is, { type AssertionType } from 'sarcastic';
 
 const PKG_SHAPE = is.shape({
@@ -32,14 +55,6 @@ function assertPkg(pkg: mixed): PkgShape {
 }
 
 let pkg = assertPkg(require('./package.json'));
-// type:
-//   {
-//     name: string,
-//     version: string,
-//     private: boolean | null,
-//     scripts: { [key: string]: string } | null,
-//     bin: string | Array<string> | null
-//   }
 ```
 
 ## API
