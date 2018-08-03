@@ -138,6 +138,14 @@ let either = /*:: <A, B> */ (assertionA /*: Assertion<A> */, assertionB /*: Asse
   };
 };
 
+let literal = /*:: <T: string | number> */ (literalValue /*:T */) /*: Assertion<T> */ => {
+  return (val, name) => {
+    // $FlowFixMe
+    if (val === literalValue) return val;
+    throw new AssertionError(`a literal<${literalValue}>`, name, val);
+  };
+};
+
 is.is = is;
 is.boolean = boolean;
 is.number = number;
@@ -152,6 +160,7 @@ is.shape = shape;
 is.maybe = maybe;
 is.default = _default;
 is.either = either;
+is.literal = literal;
 is.AssertionError = AssertionError;
 
 module.exports = is;

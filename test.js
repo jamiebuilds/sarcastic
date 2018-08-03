@@ -1,5 +1,10 @@
 // @flow
 'use strict';
+
+/*::
+import { type AssertionType } from './';
+*/
+
 const test = require('ava');
 const is = require('./');
 
@@ -97,4 +102,14 @@ test('is.either', t => {
   t.is(is(true, is.either(is.boolean, is.string), 'true'), true);
   t.is(is('hi', is.either(is.boolean, is.string), 'hi'), 'hi');
   t.throws(() => is(42, is.either(is.boolean, is.string), '42'));
+});
+
+test('is.literal', t => {
+  t.is(is('true', is.literal('true'), 'true'), 'true');
+  t.throws(() => is(42, is.literal('true'), '42'));
+  /*::
+  let literalAssertion = is.literal<'true'>('true');
+  type LiteralType = AssertionType<typeof literalAssertion>
+  ('true': LiteralType);
+  */
 });
