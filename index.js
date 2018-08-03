@@ -146,6 +146,46 @@ let literal = /*:: <T: string | number> */ (literalValue /*:T */) /*: Assertion<
   };
 };
 
+/*::
+type Union = <A, B, C, D, E> (a: Assertion<A>, b?: Assertion<B>, c?: Assertion<C>, d?: Assertion<D>, e?: Assertion<E>) => Assertion<A | B | C | D | E>
+*/
+let union /*: Union*/ = (A, B, C, D, E) => {
+  return (val, name) => {
+    let errors = []
+    try {
+      A(val, name);
+    } catch (e) {
+      if (!(e instanceof AssertionError)) throw e;
+      errors.push(e);
+    }
+    try {
+      if (B) return B(val, name);
+    } catch (e) {
+      if (!(e instanceof AssertionError)) throw e;
+      errors.push(e);
+    }
+    try {
+      if (C) return C(val, name);
+    } catch (e) {
+      if (!(e instanceof AssertionError)) throw e;
+      errors.push(e);
+    }
+    try {
+      if (D) return D(val, name);
+    } catch (e) {
+      if (!(e instanceof AssertionError)) throw e;
+      errors.push(e);
+    }
+    try {
+      if (E) return E(val, name);
+    } catch (e) {
+      if (!(e instanceof AssertionError)) throw e;
+      errors.push(e);
+    }
+    throw new AssertionError(errors.map(a => a.kind).join(' or '), name, val);
+  };
+};
+
 is.is = is;
 is.boolean = boolean;
 is.number = number;
@@ -161,6 +201,7 @@ is.maybe = maybe;
 is.default = _default;
 is.either = either;
 is.literal = literal;
+is.union = union;
 is.AssertionError = AssertionError;
 
 module.exports = is;

@@ -109,7 +109,23 @@ test('is.literal', t => {
   t.throws(() => is(42, is.literal('true'), '42'));
   /*::
   let literalAssertion = is.literal<'true'>('true');
-  type LiteralType = AssertionType<typeof literalAssertion>
+  type LiteralType = AssertionType<typeof literalAssertion>;
   ('true': LiteralType);
+  */
+});
+
+test('is.union', t => {
+  t.is(is(true, is.union(is.boolean, is.string), 'true'), true);
+  t.is(is('hi', is.union(is.boolean, is.string), 'hi'), 'hi');
+  t.throws(() => is(42, is.either(is.boolean, is.string), '42'));
+  let unionAssertion = is.union(
+    is.literal/*::<'a'>*/('a'),
+    is.literal/*::<'b'>*/('b'),
+    is.literal/*::<'c'>*/('c')
+  );
+  t.is(is('a', unionAssertion, 'a'), 'a');
+  /*::
+  type UnionType = AssertionType<typeof unionAssertion>;
+  ('test': UnionType); // doesn't work :/
   */
 });
