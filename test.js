@@ -2,7 +2,7 @@
 'use strict';
 
 /*::
-import type { AssertionType, UnionAssertion3 } from './';
+import type { AssertionType } from './';
 */
 
 const test = require('ava');
@@ -114,17 +114,17 @@ test('is.literal', t => {
   */
 });
 
-test('is.union', t => {
-  let unionAssertion /*: UnionAssertion3<'a','b','c'>*/ = is.union([
-    is.literal/*::<'a'>*/('a'),
-    is.literal/*::<'b'>*/('b'),
-    is.literal/*::<'c'>*/('c')
+test('is.literals', t => {
+  let literalsAssertion = is.literals/*::<'a'|'b'|'c'>*/([
+    'a', 'b', 'c'
   ]);
-  t.is(is('a', unionAssertion, 'a'), 'a');
-  t.throws(() => is(42, unionAssertion, '42'));
+  t.is(is('a', literalsAssertion, 'a'), 'a');
+  t.is(is('b', literalsAssertion, 'b'), 'b');
+  t.is(is('c', literalsAssertion, 'c'), 'c');
+  t.throws(() => is(42, literalsAssertion, '42'));
   const c /*: 'c'*/ = 'c';
   /*::
-  type UnionType = AssertionType<typeof unionAssertion>;
+  type UnionType = AssertionType<typeof literalsAssertion>;
   (c: UnionType);
   */
 });

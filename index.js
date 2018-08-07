@@ -139,32 +139,21 @@ let either = /*:: <A, B> */ (assertionA /*: Assertion<A> */, assertionB /*: Asse
 };
 
 let literal = /*:: <T: string | number> */ (literalValue /*:T */) /*: Assertion<T> */ => {
-  return (val, name) => {
+  return (val /*: any*/, name /*: string*/) => {
     // $FlowFixMe
     if (val === literalValue) return val;
     throw new AssertionError(`a literal<${literalValue}>`, name, val);
   };
 };
 
-/*::
-export type UnionAssertion<T> = Assertion<T>
-export type UnionAssertion2<A, B> = Assertion<A|B>
-export type UnionAssertion3<A, B, C> = Assertion<A|B|C>
-export type UnionAssertion4<A, B, C, D> = Assertion<A|B|C|D>
-type Union = <T> (Array<Assertion<any>>) => UnionAssertion<T>
-*/
-let union /*: Union*/ = (assertions) => {
+let literals = /*:: <T: string | number> */ (literalValues /*:Array<T> */) /*: Assertion<T> */ => {
   return (val /*: any*/, name /*: string*/) => {
-    let errors = []
-    for (let i = 0; i < assertions.length; i++) {
-      try {
-        return assertions[i](val, name);
-      } catch (e) {
-        if (!(e instanceof AssertionError)) throw e;
-        errors.push(e);
-      }
+    for (let i = 0; i < literalValues.length; i++) {
+      const literalValue = literalValues[i];
+      // $FlowFixMe
+      if (val === literalValue) return val;
     }
-    throw new AssertionError(errors.map(a => a.kind).join(' or '), name, val);
+    throw new AssertionError(`a literal<${literalValues.join('|')}>`, name, val);
   };
 };
 
@@ -183,7 +172,7 @@ is.maybe = maybe;
 is.default = _default;
 is.either = either;
 is.literal = literal;
-is.union = union;
+is.literals = literals;
 is.AssertionError = AssertionError;
 
 module.exports = is;
