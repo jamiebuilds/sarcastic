@@ -2,7 +2,7 @@
 // @flow
 
 /*::
-type Assertion<T> = (val: mixed, name: string) => T;
+type Assertion<T> = (val: any, name: string) => T;
 type AssertionMap = { [key: string]: Assertion<any> };
 type ExtractAssertionType = <T>(Assertion<T>) => T;
 type AssertionResultMap<T> = $ObjMap<T, ExtractAssertionType>;
@@ -25,7 +25,7 @@ class AssertionError extends Error {
   }
 }
 
-let is = /*:: <T> */ (val/*: mixed */, assertion/*: Assertion<T> */, name/*: string */ = 'value')/*: T */ => {
+let is = /*:: <T> */ (val/*: any */, assertion/*: Assertion<T> */, name/*: string */ = 'value')/*: T */ => {
   return assertion(val, name);
 };
 
@@ -147,40 +147,22 @@ let literal = /*:: <T: string | number> */ (literalValue /*:T */) /*: Assertion<
 };
 
 /*::
-type Union = <A, B, C, D, E> (a: Assertion<A>, b?: Assertion<B>, c?: Assertion<C>, d?: Assertion<D>, e?: Assertion<E>) => Assertion<A | B | C | D | E>
+export type UnionAssertion<T> = Assertion<T>
+export type UnionAssertion2<A, B> = Assertion<A|B>
+export type UnionAssertion3<A, B, C> = Assertion<A|B|C>
+export type UnionAssertion4<A, B, C, D> = Assertion<A|B|C|D>
+type Union = <T> (Array<Assertion<any>>) => UnionAssertion<T>
 */
-let union /*: Union*/ = (A, B, C, D, E) => {
-  return (val, name) => {
+let union /*: Union*/ = (assertions) => {
+  return (val /*: any*/, name /*: string*/) => {
     let errors = []
-    try {
-      A(val, name);
-    } catch (e) {
-      if (!(e instanceof AssertionError)) throw e;
-      errors.push(e);
-    }
-    try {
-      if (B) return B(val, name);
-    } catch (e) {
-      if (!(e instanceof AssertionError)) throw e;
-      errors.push(e);
-    }
-    try {
-      if (C) return C(val, name);
-    } catch (e) {
-      if (!(e instanceof AssertionError)) throw e;
-      errors.push(e);
-    }
-    try {
-      if (D) return D(val, name);
-    } catch (e) {
-      if (!(e instanceof AssertionError)) throw e;
-      errors.push(e);
-    }
-    try {
-      if (E) return E(val, name);
-    } catch (e) {
-      if (!(e instanceof AssertionError)) throw e;
-      errors.push(e);
+    for (let i = 0; i < assertions.length; i++) {
+      try {
+        return assertions[i](val, name);
+      } catch (e) {
+        if (!(e instanceof AssertionError)) throw e;
+        errors.push(e);
+      }
     }
     throw new AssertionError(errors.map(a => a.kind).join(' or '), name, val);
   };
