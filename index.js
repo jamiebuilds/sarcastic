@@ -6,6 +6,8 @@ type Assertion<T> = (val: any, name: string) => T;
 type AssertionMap = { [key: string]: Assertion<any> };
 type ExtractAssertionType = <T>(Assertion<T>) => T;
 type AssertionResultMap<T> = $ObjMap<T, ExtractAssertionType>;
+type ExtractArrayType = <T>(Array<T>) => T;
+type AssertionResultOneOf<T> = $Call<ExtractArrayType, $TupleMap<T, ExtractAssertionType>>
 
 export type AssertionType<A: Assertion<*>> = $Call<ExtractAssertionType, A>;
 */
@@ -157,6 +159,22 @@ let literals = /*:: <T: string | number> */ (literalValues /*:Array<T> */) /*: A
   };
 };
 
+let oneOf = /*:: <X: any, T: Array<Assertion<X>>> */ (assertions /*:T */) /*: Assertion<AssertionResultOneOf<T>> */ => {
+  return (val /*: any*/, name /*: string*/) => {
+    const errors = []
+    for (let i = 0; i < assertions.length; i++) {
+      try {
+        const assertion = assertions[i];
+        return assertion(val, name)
+      } catch (err) {
+        if (!(err instanceof AssertionError)) throw err;
+        errors.push(err)
+      }
+    }
+    throw new AssertionError(`a oneOf<${errors.map(err => err.kind).join('|')}>`, name, val);
+  };
+};
+
 is.is = is;
 is.boolean = boolean;
 is.number = number;
@@ -173,6 +191,7 @@ is.default = _default;
 is.either = either;
 is.literal = literal;
 is.literals = literals;
+is.oneOf = oneOf;
 is.AssertionError = AssertionError;
 
 module.exports = is;

@@ -128,3 +128,20 @@ test('is.literals', t => {
   (c: UnionType);
   */
 });
+
+test('is.oneOf', t => {
+  let literalsAssertion = is.oneOf([
+    is.literal/*:: <'a'> */('a'),
+    is.literal/*:: <'b'> */('b'),
+    is.literal/*:: <'c'> */('c')
+  ]);
+  t.is(is('a', literalsAssertion, 'a'), 'a');
+  t.is(is('b', literalsAssertion, 'b'), 'b');
+  t.is(is('c', literalsAssertion, 'c'), 'c');
+  t.throws(() => is(42, literalsAssertion, '42'));
+  const c /*: 'c'*/ = 'c';
+  /*::
+  type UnionType = AssertionType<typeof literalsAssertion>;
+  (c: UnionType);
+  */
+});
