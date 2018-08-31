@@ -2,7 +2,8 @@
 // @flow
 
 /*::
-type Assertion<T> = (val: mixed, name: string) => T;
+type Name = string | (...keyPath: Array<string | number>) => string;
+type Assertion<T> = (val: mixed, name: Name) => T;
 type AssertionMap = { [key: string]: Assertion<any> };
 type ExtractAssertionType = <T>(Assertion<T>) => T;
 type AssertionResultMap<T> = $ObjMap<T, ExtractAssertionType>;
@@ -25,48 +26,67 @@ class AssertionError extends Error {
   }
 }
 
-let is = /*:: <T> */ (val/*: mixed */, assertion/*: Assertion<T> */, name/*: string */ = 'value')/*: T */ => {
+function nameToStr(name/*: Name */)/*: string */ {
+  if (typeof name === 'function') {
+    return name();
+  } else {
+    return name;
+  }
+}
+
+function nextName(name/*: Name */, key/*: string | number */, fmt/*: string => string */) {
+  if (typeof name === 'function') {
+    let safe = name;
+    return (...keyPath) => safe(key, ...keyPath);
+  } else {
+    return fmt(name);
+  }
+}
+
+let is = /*:: <T> */ (val/*: mixed */, assertion/*: Assertion<T> */, name/*: Name */ = 'value')/*: T */ => {
   return assertion(val, name);
 };
 
 let boolean /*: Assertion<boolean> */ = (val, name) => {
   if (typeof val === 'boolean') return val;
-  throw new AssertionError('a boolean', name, val);
+  throw new AssertionError('a boolean', nameToStr(name), val);
 };
 
 let number /*: Assertion<number> */ = (val, name) => {
   if (typeof val === 'number') return val;
-  throw new AssertionError('a number', name, val);
+  throw new AssertionError('a number', nameToStr(name), val);
 };
 
 let string /*: Assertion<string> */ = (val, name) => {
   if (typeof val === 'string') return val;
-  throw new AssertionError('a string', name, val);
+  throw new AssertionError('a string', nameToStr(name), val);
 };
 
 let regex /*: Assertion<RegExp> */ = (val, name) => {
   if (typeof val === 'object' && val instanceof RegExp) return val;
-  throw new AssertionError('a regex', name, val);
+  throw new AssertionError('a regex', nameToStr(name), val);
 };
 
 let array /*: Assertion<Array<mixed>> */ = (val, name) => {
   if (Array.isArray(val)) return val;
-  throw new AssertionError('an array', name, val);
+  throw new AssertionError('an array', nameToStr(name), val);
 };
 
 let func /*: Assertion<Function> */ = (val, name) => {
   if (typeof val === 'function') return val;
-  throw new AssertionError('a function', name, val);
+  throw new AssertionError('a function', nameToStr(name), val);
 };
 
 let object /*: Assertion<{ [key: string]: mixed }> */ = (val, name) => {
   if (typeof val === 'object' && val !== null && !Array.isArray(val)) return val;
-  throw new AssertionError('an object', name, val);
+  throw new AssertionError('an object', nameToStr(name), val);
 };
 
 let arrayOf = /*:: <T> */ (assertion /*: Assertion<T> */) /*: Assertion<Array<T>> */ => {
   return (val, name) => {
-    return is(val, array, name).map((item, index) => assertion(item, `${name}[${index}]`));
+    return is(val, array, name).map((item, index) => {
+      return assertion(item, nextName(name, index, name => `${name}[${index}]`))
+    });
   };
 };
 
@@ -80,7 +100,7 @@ let arrayish = /*:: <T> */ (assertion /*: Assertion<T> */) /*: Assertion<Array<T
         return [assertion(val, name)];
       } catch (err) {
         if (!(err instanceof AssertionError)) throw err;
-        throw new AssertionError(`${err.kind} or an array`, name, val);
+        throw new AssertionError(`${err.kind} or an array`, nameToStr(name), val);
       }
     }
   };
@@ -91,7 +111,7 @@ let objectOf = /*::<T> */ (assertion/*: Assertion<T>*/)/*: Assertion<{ [key: str
     let obj = is(val, object, name);
     let res = {};
     Object.keys(obj).forEach(key => {
-      res[key] = assertion(obj[key], `${name}.${key}`);
+      res[key] = assertion(obj[key], nextName(name, key, name => `${name}.${key}`));
     });
     return res;
   };
@@ -102,7 +122,7 @@ let shape = /*:: <T: AssertionMap> */ (assertions /*: T */) /*: Assertion<Assert
     let obj = is(val, object, name);
     let res = {};
     Object.keys(assertions).forEach(key => {
-      res[key] = assertions[key](obj[key], `${name}.${key}`);
+      res[key] = assertions[key](obj[key], nextName(name, key, name => `${name}.${key}`));
     });
     return res;
   };
@@ -132,7 +152,7 @@ let either = /*:: <A, B> */ (assertionA /*: Assertion<A> */, assertionB /*: Asse
         return assertionB(val, name);
       } catch (errB) {
         if (!(errA instanceof AssertionError)) throw errB;
-        throw new AssertionError(`${errA.kind} or ${errB.kind}`, name, val);
+        throw new AssertionError(`${errA.kind} or ${errB.kind}`, nameToStr(name), val);
       }
     }
   };

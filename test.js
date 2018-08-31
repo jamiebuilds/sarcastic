@@ -9,6 +9,16 @@ test('is without name', t => {
   t.throws(() => is(42, is.boolean));
 });
 
+function fmt(...keyPath) /*: string */ {
+  return ['value', ...keyPath].join(' > ');
+}
+
+test('is with name as func', t => {
+  t.throws(() => {
+    is({ foo: [{ bar: false }] }, is.shape({ foo: is.arrayOf(is.objectOf(is.string)) }), fmt);
+  }, 'value > foo > 0 > bar must be a string');
+});
+
 test('is.boolean', t => {
   t.is(is(true, is.boolean, 'true'), true);
   t.is(is(false, is.boolean, 'false'), false);

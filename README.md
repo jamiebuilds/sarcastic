@@ -63,7 +63,22 @@ let pkg = assertPkg(require('./package.json'));
 
 ```js
 is(true, is.boolean);
-is(true, is.boolean, "example");
+```
+
+You can optionally pass a name for the value so that errors are more
+descriptive:
+
+```js
+is(deepObj, deepShape, 'example');
+// example.pathTo.nestedKeys.withIndexesLike[14]
+```
+
+Alternatively you can pass a formatter as the name which will receive the path
+to the error as strings for keys and numbers for indexes:
+
+```js
+is(deepObj, deepShape, (...keyPath) => ['example', ...keyPath].join(' > '));
+// example > pathTo > nestedKeys > withIndexesLike > 14
 ```
 
 ### `is.boolean`
@@ -85,7 +100,7 @@ is(true, is.number); // throws instanceof is.AssertionError
 ### `is.string`
 
 ```js
-is("", is.string), ""); // returns ""
+is("", is.string); // returns ""
 is("hi", is.string); // returns "hi"
 is(true, is.string); // throws instanceof is.AssertionError
 ```
