@@ -5,7 +5,7 @@
   "main": "index.js",
   "repository": "https://github.com/jamiebuilds/sarcastic",
   "author": "James Kyle <me@thejameskyle.com>",
-  "license": "SEE LICENSE IN LICENSE",
+  "license": "MIT",
   "keywords": [
     "type",
     "flow",
