@@ -37,6 +37,14 @@ test('is.string', t => {
   t.throws(() => is(true, is.string, 'true'));
 });
 
+test('is.date', t => {
+  const valid = new Date();
+  const invalid = new Date('hi');
+  t.is(is(valid, is.date, valid.toDateString()), valid);
+  t.is(is(invalid, is.date, invalid.toDateString()), invalid);
+  t.throws(() => is(true, is.date, 'true'));
+});
+
 test('is.array', t => {
   t.deepEqual(is([], is.array, '[]'), []);
   t.deepEqual(is([1, 2, 3], is.array, '[1, 2, 3]'), [1, 2, 3]);

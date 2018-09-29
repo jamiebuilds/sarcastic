@@ -105,6 +105,14 @@ is("hi", is.string); // returns "hi"
 is(true, is.string); // throws instanceof is.AssertionError
 ```
 
+### `is.date`
+
+```js
+is(new Date(), is.date); // returns instance of Date
+is(new Date("hi"), is.date); // returns instance of Date
+is(true, is.date); // throws instanceof is.AssertionError
+```
+
 ### `is.array`
 
 ```js

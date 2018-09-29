@@ -67,6 +67,11 @@ let regex /*: Assertion<RegExp> */ = (val, name) => {
   throw new AssertionError('a regex', nameToStr(name), val);
 };
 
+let date /*: Assertion<Date> */ = (val, name) => {
+  if (typeof val === 'object' && val instanceof Date) return val;
+  throw new AssertionError('a date', nameToStr(name), val);
+};
+
 let array /*: Assertion<Array<mixed>> */ = (val, name) => {
   if (Array.isArray(val)) return val;
   throw new AssertionError('an array', nameToStr(name), val);
@@ -162,6 +167,7 @@ is.is = is;
 is.boolean = boolean;
 is.number = number;
 is.string = string;
+is.date = date;
 is.array = array;
 is.func = func;
 is.object = object;
